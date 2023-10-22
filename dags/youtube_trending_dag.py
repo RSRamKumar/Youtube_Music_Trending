@@ -43,15 +43,12 @@ task_2 = PythonOperator(
 )
 
 
-def load_data_to_sqlite():
-    df = pd.read_csv(f'{dag_path}/processed_data/trending_results.csv')
 
+task_3 = PythonOperator(
+    task_id='create_plotly_dashboard',
+    python_callable=create_HTML_dashboard,
+    op_kwargs = {'df': task_2.output}
+    dag=youtube_trending_dag
+)
 
-
-# task_3 = PythonOperator(
-#     task_id='loading_of_videos_to_sqlite_db',
-#     python_callable=load_data_to_sqlite,
-#     dag=youtube_trending_dag
-# )
-
-task_1 >> task_2
+task_1 >> task_2 >> task_3
