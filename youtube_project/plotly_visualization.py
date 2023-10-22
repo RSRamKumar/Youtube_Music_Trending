@@ -6,6 +6,7 @@ from dash import dcc, html, Input, Output
 import plotly.express as px
 import webbrowser
 from jupyter_dash import JupyterDash
+from datetime import datetime, time
 
 
 def create_HTML_dashboard(df):
@@ -30,5 +31,5 @@ def create_HTML_dashboard(df):
         if clickData:
             webbrowser.open(clickData["points"][0]["customdata"][0])
 
-    scatter_figure.write_html(f"{pwd}/processed_results/youtube_trending_results_dashboard{datetime.strftime(datetime.now(), '%d-%m-%Y_%H-%M')}.html")
+    scatter_figure.write_html(f"{pwd}/processed_results/youtube_trending_results_dashboard_{datetime.strftime(datetime.now(), '%d-%m-%Y_%H-%M')}.html")
   
