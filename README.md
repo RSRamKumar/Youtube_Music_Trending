@@ -9,4 +9,4 @@ Tools Used:
 
 ![image](https://github.com/RSRamKumar/Youtube_Music_Trending/assets/39699070/3d029c14-23a0-4cd2-872b-dbb7c746ec9a)
 
-Fig: Plotly visualization stored in the desired repository. On clicking the bubbles, it directly navigates to the youtube video.
+Fig: Plotly visualization stored in the desired repository. On clicking the bubbles, it directly navigates us to the youtube video.
