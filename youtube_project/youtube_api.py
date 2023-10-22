@@ -4,7 +4,7 @@ import googleapiclient.discovery
 def extract_trending_youtube_music_videos():
     api_service_name = "youtube"
     api_version = "v3"
-    DEVELOPER_KEY = "AIzaSyDeydpyIqXNbwAlAnjuqxcpr5s_n12QynQ"
+    DEVELOPER_KEY = "xxxxxxxxxxxxxxxxxxxxxxx"
 
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, developerKey=DEVELOPER_KEY)
