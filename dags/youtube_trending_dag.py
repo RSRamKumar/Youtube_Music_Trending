@@ -5,6 +5,7 @@ from airflow.utils.dates import days_ago
 
 from youtube_project.youtube_api import extract_trending_youtube_music_videos
 from youtube_project.parse_youtube_trending_result import parse_top_10_youtube_music_trending
+from youtube_project.plotly_visualization import create_HTML_dashboard
 
 import pandas as pd
 from datetime import datetime, timedelta
