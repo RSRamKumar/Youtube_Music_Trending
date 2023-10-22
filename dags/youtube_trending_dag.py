@@ -22,8 +22,8 @@ default_args = {
 youtube_trending_dag = DAG(
     'youtube_music_trending_dag',
     default_args=default_args,
-    description='Youtube Trending Music Videos in a Day Every 30 mins',
-    schedule_interval= timedelta(minutes=30),
+    description='Youtube Trending Music Videos in a Day',
+    schedule_interval= '@once', #timedelta(minutes=30)
     catchup=False
 )
 
