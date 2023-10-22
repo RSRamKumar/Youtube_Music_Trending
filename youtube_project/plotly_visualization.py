@@ -30,4 +30,5 @@ def create_HTML_dashboard(df):
         if clickData:
             webbrowser.open(clickData["points"][0]["customdata"][0])
 
-    scatter_figure.write_html(r"\youtube_plotly_vizA.html")
+    scatter_figure.write_html(f"{pwd}/processed_results/youtube_trending_results_dashboard{datetime.strftime(datetime.now(), '%d-%m-%Y_%H-%M')}.html")
+  
