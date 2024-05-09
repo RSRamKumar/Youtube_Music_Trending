@@ -2,6 +2,11 @@ import googleapiclient.discovery
 
 
 def extract_trending_youtube_music_videos():
+    """
+    Method for extracting the Youtube Trending data
+    for the region India (IN) and
+    music category (10)
+    """
     api_service_name = "youtube"
     api_version = "v3"
     DEVELOPER_KEY = "xxxxxxxxxxxxxxxxxxxxxxx"
