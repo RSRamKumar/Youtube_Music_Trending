@@ -5,7 +5,7 @@ import re
 import numpy as np
 import os
 
-pwd = os.getcwd()
+dag_path = os.getcwd()
 
 def generate_time_duration(time_string):
     """
@@ -26,7 +26,9 @@ def generate_time_duration(time_string):
     return time(hours, minutes, seconds)
 
 def parse_top_10_youtube_music_trending(youtube_trending_results_raw):
-
+    """
+    Method for parsing the top 10 music from raw json response
+    """
     youtube_trending_result_list = youtube_trending_results_raw['items']
 
     parsed_result_list = list()
@@ -38,7 +40,7 @@ def parse_top_10_youtube_music_trending(youtube_trending_results_raw):
             'published_date': result['snippet']['publishedAt'],
             'channel': result['snippet']['channelTitle'],
             'duration': generate_time_duration(result['contentDetails']['duration']),
-            'views': result['statistics']['viewCount'],
+            'views': int(result['statistics']['viewCount']),
             'video_url': f"https://youtu.be/{result['id']}"
         }
         parsed_result_list.append(parsed_result_dict)
@@ -46,11 +48,9 @@ def parse_top_10_youtube_music_trending(youtube_trending_results_raw):
 
     df = pd.DataFrame(parsed_result_list)
     df.insert(0, 'datetime_retrieved', datetime.strftime(datetime.now(), '%d-%m-%Y_%H:%M'))
-    df.index = np.arange(1, len(df)+1)
-    df.to_csv(f"{pwd}/processed_results/youtube_trending_results_{datetime.strftime(datetime.now(), '%d-%m-%Y_%H-%M')}.csv", index=False)
-    #return df.to_json()
+    df.to_csv(f"{dag_path}/processed_data/youtube_trending_results_{date.today().strftime('%d-%m-%Y)}.csv", index=False)
+    return df
 
 
 if __name__ == "__main__":
-    result = parse_top_10_youtube_music_trending(extract_trending_youtube_music_videos())
-    print(result)
+    parse_top_10_youtube_music_trending(extract_trending_youtube_music_videos())
