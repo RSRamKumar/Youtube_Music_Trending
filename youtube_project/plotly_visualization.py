@@ -13,7 +13,7 @@ dag_path = os.getcwd()
 
 def create_HTML_dashboard(df):
     app = Dash(__name__)
-    scatter_figure =px.scatter(df, x="song_title", y="views", size="views" , color='channel' ,
+    scatter_figure = px.scatter(df, x="song_title", y="views", size="views" , color='channel' ,
                            custom_data=["video_url"], size_max=20, template='plotly_dark', facet_col='channel', facet_col_wrap=3,
                            hover_name='channel', labels= {'channel': 'Top 10 Music Channels', 'views': 'Total Views'},  
                            title='Trending Musics in India'
