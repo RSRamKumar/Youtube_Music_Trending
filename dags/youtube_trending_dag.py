@@ -1,6 +1,6 @@
 import os
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 
 from youtube_project.youtube_api import extract_trending_youtube_music_videos
@@ -23,7 +23,7 @@ youtube_trending_dag = DAG(
     'youtube_music_trending_dag',
     default_args=default_args,
     description='Youtube Trending Music Videos in a Day',
-    schedule_interval= '@once', #timedelta(minutes=30)
+    schedule= '@once', #timedelta(minutes=30)
     catchup=False
 )
 
@@ -47,7 +47,7 @@ task_2 = PythonOperator(
 task_3 = PythonOperator(
     task_id='create_plotly_dashboard',
     python_callable=create_HTML_dashboard,
-    op_kwargs = {'df': task_2.output}
+    op_kwargs = {'df': task_2.output},
     dag=youtube_trending_dag
 )
 
