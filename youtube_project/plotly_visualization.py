@@ -9,13 +9,15 @@ import webbrowser
 from dash import Dash
 from datetime import datetime, time, date
 
+
 dag_path = os.getcwd()
+
 
 def create_HTML_dashboard(df):
     app = Dash(__name__)
-    scatter_figure = px.scatter(df, x="song_title", y="views", size="views" , color='channel' ,
+    scatter_figure =px.scatter(df, x="song_title", y="views", size="views" , color='channel' ,
                            custom_data=["video_url"], size_max=20, template='plotly_dark', facet_col='channel', facet_col_wrap=3,
-                           hover_name='channel', labels= {'channel': 'Top 10 Music Channels', 'views': 'Total Views'},  
+                           hover_name='channel', labels= {'channel': 'Top 10 Music Channels', 'views': 'Total Views',  },  
                            title='Trending Musics in India'
                             )
     scatter_figure.update_layout(width=1200, height=500, title_x=0.5)
@@ -34,4 +36,8 @@ def create_HTML_dashboard(df):
             webbrowser.open(clickData["points"][0]["customdata"][0])
 
     scatter_figure.write_html(f"{dag_path}/processed_data/youtube_trending_results_dashboard_{date.today().strftime('%d-%m-%Y')}.html")
-  
+
+
+
+if __name__ == "__main__":
+    create_HTML_dashboard(df)
