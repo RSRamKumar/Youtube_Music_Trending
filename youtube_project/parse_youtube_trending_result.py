@@ -48,7 +48,7 @@ def parse_top_10_youtube_music_trending(youtube_trending_results_raw):
 
     df = pd.DataFrame(parsed_result_list)
     df.insert(0, 'datetime_retrieved', datetime.strftime(datetime.now(), '%d-%m-%Y_%H:%M'))
-    df.to_csv(f"{dag_path}/processed_data/youtube_trending_results_{date.today().strftime('%d-%m-%Y)}.csv", index=False)
+    df.to_csv(f"{dag_path}/processed_data/youtube_trending_results_{date.today().strftime('%d-%m-%Y')}.csv", index=False)
     return df
 
 
