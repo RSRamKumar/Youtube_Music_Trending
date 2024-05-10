@@ -1,7 +1,7 @@
 import googleapiclient.discovery
 
 
-def extract_trending_youtube_music_videos():
+def extract_trending_youtube_videos():
     """
     Method for extracting the Youtube Trending data
     for the region India (IN) and
@@ -9,7 +9,7 @@ def extract_trending_youtube_music_videos():
     """
     api_service_name = "youtube"
     api_version = "v3"
-    DEVELOPER_KEY = "xxxxxxxxxxxxxxxxxxxxxxx"
+    DEVELOPER_KEY = 'xxx'
 
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, developerKey=DEVELOPER_KEY)
@@ -27,4 +27,4 @@ def extract_trending_youtube_music_videos():
 
 
 if __name__ == "__main__":
-    extract_trending_youtube_music_videos()
+    extract_trending_youtube_videos()
