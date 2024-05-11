@@ -17,7 +17,7 @@ def extract_trending_youtube_videos():
     request = youtube.videos().list(
         part="contentDetails,id,snippet,statistics",
         chart="mostPopular",
-        maxResults=10,
+        maxResults=30,
         regionCode="IN",
         videoCategoryId="10"
     )
