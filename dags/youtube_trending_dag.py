@@ -1,16 +1,13 @@
-import os
+
+
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.providers.http.sensors.http import HttpSensor
 from airflow.utils.dates import days_ago
+from parse_youtube_trending_results import parse_top_10_youtube_music_trending
+from plotly_viz import create_HTML_dashboard
 
-from youtube_project.youtube_api import extract_trending_youtube_music_videos
-from youtube_project.parse_youtube_trending_result import parse_top_10_youtube_music_trending
-from youtube_project.plotly_visualization import create_HTML_dashboard
-
-import pandas as pd
-from datetime import datetime, timedelta
-import pendulum
-
+from youtube_api import extract_trending_youtube_videos
 
 default_args = {
     'owner': 'ramkumar',
@@ -19,36 +16,38 @@ default_args = {
 
 }
 
-youtube_trending_dag = DAG(
+with  DAG(
     'youtube_music_trending_dag',
     default_args=default_args,
     description='Youtube Trending Music Videos in a Day',
     schedule= '@once', #timedelta(minutes=30)
     catchup=False
+) as dag:
+
+	task_0 = HttpSensor(
+    task_id = 'check_youtube_api_ready',
+    http_conn_id = 'youtube_api_url',
+    endpoint = 'youtube/v3/videos?part=contentDetails%2Cid%2Csnippet%2Cstatistics&chart=mostPopular&maxResults=10&regionCode=IN&videoCategoryId=10&key=AIzaSyDeydpyIqXNbwAlAnjuqxcpr5s_n12QynQ&alt=json'
 )
 
-task_1 = PythonOperator(
+	task_1 = PythonOperator(
     task_id='extraction_of_videos',
-    python_callable= extract_trending_youtube_music_videos ,
-    dag=youtube_trending_dag
+    python_callable= extract_trending_youtube_videos ,
+   
 )
 
-
-
-task_2 = PythonOperator(
+	task_2 = PythonOperator(
     task_id='parse_of_videos',
     python_callable= parse_top_10_youtube_music_trending ,
     op_kwargs = {'youtube_trending_results_raw': task_1.output},
-    dag=youtube_trending_dag
+    
 )
 
-
-
-task_3 = PythonOperator(
+	task_3 = PythonOperator(
     task_id='create_plotly_dashboard',
     python_callable=create_HTML_dashboard,
     op_kwargs = {'df': task_2.output},
-    dag=youtube_trending_dag
+    
 )
 
-task_1 >> task_2 >> task_3
+	task_0 >> task_1 >> task_2 >> task_3
