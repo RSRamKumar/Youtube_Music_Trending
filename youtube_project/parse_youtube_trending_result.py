@@ -1,7 +1,7 @@
 import json
 import re
 from datetime import date, datetime, timedelta
-
+from typing import Tuple
 import boto3
 from pydantic import BaseModel, Field, computed_field, field_validator
 
@@ -89,10 +89,11 @@ class YoutubeData(BaseModel):
 
 def parse_top_10_youtube_music_trending(
     youtube_trending_results_raw: json,
-) -> None:
+) -> Tuple[str,str]:
     """
     Method for parsing the top 10 music from raw json response
     and write it to the file in the S3 bucket
+    Returns filename and filepath for next downstreaming activities
     """
     results = [YoutubeData(**item) for item in youtube_trending_results_raw["items"]]
 
