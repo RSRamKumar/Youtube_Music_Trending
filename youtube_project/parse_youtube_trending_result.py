@@ -120,6 +120,8 @@ def parse_top_10_youtube_music_trending(
         Key=output_file_name,
     )
 
+    return output_file_name, f"s3://youtube-data-bucket-ram/{output_file_name}"
+
     ## Writing it to local filesystem
     # with open(output_file_path, "w", encoding="utf-8") as output_file:
     #     json.dump(parsed_result_list, output_file, indent=4, ensure_ascii=False)
