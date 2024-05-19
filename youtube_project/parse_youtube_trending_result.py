@@ -1,9 +1,8 @@
-import os
-import re
 import json
-from datetime import date, datetime, time, timedelta
+import re
+from datetime import date, datetime, timedelta
 
-import pandas as pd
+import boto3
 from pydantic import BaseModel, Field, computed_field, field_validator
 
 from youtube_api import extract_trending_youtube_videos
@@ -32,14 +31,14 @@ def generate_time_duration(time_string: str) -> int:
     minutes = int(minute_match.group(1)) if minute_match else 0
     seconds = int(second_match.group(1)) if second_match else 0
 
-    return timedelta(hours=hours,minutes= minutes, seconds=seconds).total_seconds()
+    return timedelta(hours=hours, minutes=minutes, seconds=seconds).total_seconds()
 
 
 class VideoMetaData(BaseModel):
     song_title: str = Field(alias="title")
-    published_date: date = Field(alias="publishedAt")
+    published_date: str = Field(alias="publishedAt")
     channel: str = Field(alias="channelTitle")
-    language: str = Field(alias="defaultAudioLanguage")
+    language: str = Field(alias="defaultAudioLanguage", default="Not Given")
 
     @field_validator("song_title", mode="before")
     @classmethod
@@ -47,15 +46,17 @@ class VideoMetaData(BaseModel):
         """
         Method for stripping the song title field
         """
-        return song_title.strip().replace(',','|')
-    
+        return song_title.strip().replace(",", "|")
+
     @field_validator("published_date", mode="before")
     @classmethod
-    def get_published_date(cls, published_date: str) -> date:
+    def get_published_date(cls, published_date: str) -> str:
         """
         Method for parsing the date from published_date datetime field
         """
-        return  datetime.strptime(published_date, "%Y-%m-%dT%H:%M:%SZ").date()
+        return datetime.strptime(published_date, "%Y-%m-%dT%H:%M:%SZ").strftime(
+            "%d-%m-%Y"
+        )
 
 
 class VideoContentDetails(BaseModel):
@@ -86,36 +87,42 @@ class YoutubeData(BaseModel):
         return f"https://youtu.be/{self.id}"
 
 
-dag_path = os.getcwd()
-
-
 def parse_top_10_youtube_music_trending(
     youtube_trending_results_raw: json,
-) -> pd.DataFrame:
+) -> None:
     """
     Method for parsing the top 10 music from raw json response
+    and write it to the file in the S3 bucket
     """
     results = [YoutubeData(**item) for item in youtube_trending_results_raw["items"]]
 
-    parsed_result_list = []
-    for result in results:
-        result_dict = result.model_dump()
-        parsed_result_list.append(
-            {
-                **result_dict["snippet"],
-                **result_dict["contentDetails"],
-                **result_dict["statistics"],
-                **{"video_url": result_dict["video_url"]},
-            }
-        )
+    # This method when date field's dtype in Pydantic Model is date,
+    # but model_dump_json() transforms into str
+    # parsed_result_list = [json.loads(result.model_dump_json()) for result in results]
 
-    df = pd.DataFrame(parsed_result_list)
-    #df['published_date'] = pd.to_datetime(df['published_date'])
-    df.to_csv(
-        f"{dag_path}/processed_data/youtube_trending_results_{date.today().strftime('%d-%m-%Y')}.csv",
-        index=False,
+    # This method when date field's dtype in Pydantic Model is date,
+    # but model_dump() retains as original date object.
+    # If we try to use json.dumps(), it results "date is not json serializable"
+    # Better to declare date as string in pydantic model
+    parsed_result_list = [result.model_dump() for result in results]
+
+    output_file_name = (
+        f"youtube_trending_results_{date.today().strftime('%d-%m-%Y')}.json"
     )
-    return df
+
+    s3_client = boto3.client("s3")
+
+    json_data = json.dumps(parsed_result_list, indent=4, ensure_ascii=False)
+
+    s3_client.put_object(
+        Body=json_data.encode("utf-8"),
+        Bucket="youtube-data-bucket-ram",
+        Key=output_file_name,
+    )
+
+    ## Writing it to local filesystem
+    # with open(output_file_path, "w", encoding="utf-8") as output_file:
+    #     json.dump(parsed_result_list, output_file, indent=4, ensure_ascii=False)
 
 
 if __name__ == "__main__":
