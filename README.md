@@ -1,6 +1,11 @@
 # Youtube Music Trending Project
 
-A project to find the top 10 trending music videos in India by scrapping the publically available Youtube API, parsing the relevant information and creating a simple dashboard in Plotly.
+A project to find the top trending music videos in India (or other region) by retrieving the data using the
+Youtube API, parsing the relevant information and creating a simple dashboard in Plotly.
+
+Airflow was launched using AWS EC2 instance. The transformed data was crawled by Glue Crawler from S3
+Bucket. Then, interactive queries were written with the help of Athena to understand and answer questions
+regarding the trending.
 
 Tools Used:
 1. Python [ETL Pipeline including Pydantic for data parsing and validation],
