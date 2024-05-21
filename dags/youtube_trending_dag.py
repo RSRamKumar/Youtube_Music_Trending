@@ -43,12 +43,12 @@ with DAG(
 
     task_3 = BashOperator(
         task_id="copy_data_from_landing_to_intermediate_bucket",
-        bash_command='aws s3 cp {{ti.xcom_pull("parse_of_videos")[1]}} s3://youtube-data-bucket-ram-intermediate-data/{{ti.xcom_pull("parse_of_videos")[0]}}',
+        bash_command='aws s3 cp {{ti.xcom_pull("parse_of_videos")["json_file_path"]}} s3://youtube-data-bucket-ram-intermediate-data/{{ti.xcom_pull("parse_of_videos")["json_file_name"]}}',
     )
 
     task_4 = S3KeySensor(
         task_id="check_for_transformed_csv_data",
-        bucket_key='{{ti.xcom_pull("parse_of_videos")[2]}}',
+        bucket_key='{{ti.xcom_pull("parse_of_videos")["csv_file_name"]}}',
         bucket_name="youtube-data-bucket-ram-transformed-data",
         aws_conn_id="aws_default",
         poke_interval=15,
@@ -59,13 +59,13 @@ with DAG(
         task_id="create_plotly_dashboard",
         python_callable=create_HTML_dashboard,
         op_kwargs={
-            "file_path": 's3://youtube-data-bucket-ram-transformed-data/{{ti.xcom_pull("parse_of_videos")[2]}}'
+            "file_path": 's3://youtube-data-bucket-ram-transformed-data/{{ti.xcom_pull("parse_of_videos")["csv_file_name"]}}'
         },
     )
 
     task_6 = BashOperator(
         task_id="move_plotly_dashboard_from_ec2_to_transformed_bucket",
-        bash_command='aws s3 mv {{ti.xcom_pull("create_plotly_dashboard")[0]}} s3://youtube-data-bucket-ram-transformed-data/',
+        bash_command='aws s3 mv {{ti.xcom_pull("create_plotly_dashboard")}} s3://youtube-data-bucket-ram-transformed-data/',
     )
 
     task_0 >> task_1 >> task_2 >> task_3 >> task_4 >> task_5 >> task_6
