@@ -7,6 +7,7 @@ Tools Used:
 2. Airflow (schedule these tasks)
 3. Plotly (to create final visualization)
 
-![image](https://github.com/RSRamKumar/Youtube_Music_Trending/assets/39699070/3d029c14-23a0-4cd2-872b-dbb7c746ec9a)
+![image](https://github.com/RSRamKumar/Youtube_Music_Trending/assets/39699070/15bb640d-f184-4be2-9535-0075b75d3656)
+
 
 Fig: Plotly visualization stored in the desired repository. On clicking the bubbles, it directly navigates us to the youtube video.
