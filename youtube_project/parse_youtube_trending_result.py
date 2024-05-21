@@ -1,7 +1,7 @@
 import json
 import re
 from datetime import date, datetime, timedelta
-from typing import Tuple
+from typing import Dict
 import boto3
 from pydantic import BaseModel, Field, computed_field, field_validator
 
@@ -89,11 +89,10 @@ class YoutubeData(BaseModel):
 
 def parse_top_10_youtube_music_trending(
     youtube_trending_results_raw: json,
-) -> Tuple[str,str]:
+) -> Dict:
     """
     Method for parsing the top 10 music from raw json response
     and write it to the file in the S3 bucket
-    Returns filename and filepath for next downstreaming activities
     """
     results = [YoutubeData(**item) for item in youtube_trending_results_raw["items"]]
 
@@ -107,9 +106,10 @@ def parse_top_10_youtube_music_trending(
     # Better to declare date as string in pydantic model
     parsed_result_list = [result.model_dump() for result in results]
 
-    output_file_name = (
+    json_file_name = (
         f"youtube_trending_results_{date.today().strftime('%d-%m-%Y')}.json"
     )
+    csv_file_name = json_file_name.replace("json", "csv")
 
     s3_client = boto3.client("s3")
 
@@ -118,10 +118,13 @@ def parse_top_10_youtube_music_trending(
     s3_client.put_object(
         Body=json_data.encode("utf-8"),
         Bucket="youtube-data-bucket-ram",
-        Key=output_file_name,
+        Key=json_file_name,
     )
-
-    return output_file_name, f"s3://youtube-data-bucket-ram/{output_file_name}"
+    return {
+        "json_file_name": json_file_name,
+        "json_file_path": f"s3://youtube-data-bucket-ram/{json_file_name}",
+        "csv_file_name": csv_file_name,
+    }
 
     ## Writing it to local filesystem
     # with open(output_file_path, "w", encoding="utf-8") as output_file:
