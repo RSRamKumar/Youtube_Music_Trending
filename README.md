@@ -4,7 +4,7 @@ A project to find the top trending music videos in India (or other region) by re
 Youtube API, parsing the relevant information and creating a simple dashboard in Plotly.
 
 Airflow was launched using AWS EC2 instance. AWS Lambda function was utilized to trigger the transformation script that converts the parsed JSON file into a CSV file for downstream operations.
-The transformed data was crawled by Glue Crawler from S3 Bucket. Then, interactive queries were written with the help of Athena to understand and answer questions
+The transformed data was then crawled by Glue Crawler from S3 Bucket. Then, interactive queries were written with the help of Athena to understand and answer questions
 regarding the trending.
 
 Tools Used:
