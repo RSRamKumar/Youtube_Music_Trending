@@ -27,7 +27,7 @@ with DAG(
     task_0 = HttpSensor(
         task_id="check_youtube_api_ready",
         http_conn_id="youtube_api_url",
-        endpoint="youtube/v3/videos?part=contentDetails%2Cid%2Csnippet%2Cstatistics&chart=mostPopular&maxResults=10&regionCode=IN&videoCategoryId=10&key=AIzaSyDeydpyIqXNbwAlAnjuqxcpr5s_n12QynQ&alt=json",
+        endpoint="youtube/v3/videos?part=contentDetails%2Cid%2Csnippet%2Cstatistics&chart=mostPopular&maxResults=10&regionCode=IN&videoCategoryId=10&key={{ti.xcom_pull('dev_key')}}&alt=json",
     )
 
     task_1 = PythonOperator(
