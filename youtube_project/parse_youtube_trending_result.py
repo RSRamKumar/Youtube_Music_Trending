@@ -91,8 +91,7 @@ def parse_top_youtube_music_trending_for_the_day(
     youtube_trending_results_raw: json,
 ) -> List:
     """
-    Method for parsing the top 10 music from raw json response
-    and write it to the file in the S3 bucket
+    Method for parsing the trending music from raw json response
     """
     results = [YoutubeData(**item) for item in youtube_trending_results_raw["items"]]
 
