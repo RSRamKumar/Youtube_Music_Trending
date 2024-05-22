@@ -1,11 +1,11 @@
 import json
 import re
 from datetime import date, datetime, timedelta
-from typing import Dict
+
 import boto3
 from pydantic import BaseModel, Field, computed_field, field_validator
-
-from youtube_api import extract_trending_youtube_videos
+from typing import Dict, List
+from extract_youtube_video_data import extract_trending_youtube_videos_raw_data
 
 
 def generate_time_duration(time_string: str) -> int:
@@ -87,9 +87,9 @@ class YoutubeData(BaseModel):
         return f"https://youtu.be/{self.id}"
 
 
-def parse_top_10_youtube_music_trending(
+def parse_top_youtube_music_trending_for_the_day(
     youtube_trending_results_raw: json,
-) -> Dict:
+) -> List:
     """
     Method for parsing the top 10 music from raw json response
     and write it to the file in the S3 bucket
@@ -106,25 +106,31 @@ def parse_top_10_youtube_music_trending(
     # Better to declare date as string in pydantic model
     parsed_result_list = [result.model_dump() for result in results]
 
+    return parsed_result_list 
+
+def put_trending_data_into_landing_bucket(trendings_list:List) -> Dict:
+    """
+    Method for creating json output file and dropping it into landing S3 bucket
+    """
+
     json_file_name = (
         f"youtube_trending_results_{date.today().strftime('%d-%m-%Y')}.json"
     )
-    csv_file_name = json_file_name.replace("json", "csv")
+    csv_file_name = json_file_name.replace('json', 'csv') #Used for downstream activity
 
     s3_client = boto3.client("s3")
 
-    json_data = json.dumps(parsed_result_list, indent=4, ensure_ascii=False)
+    json_data = json.dumps(trendings_list, indent=4, ensure_ascii=False)
 
+    # Put the data into Landing Bucket
     s3_client.put_object(
         Body=json_data.encode("utf-8"),
-        Bucket="youtube-data-bucket-ram",
+        Bucket="youtube-data-bucket-ram-landing-data",
         Key=json_file_name,
     )
-    return {
-        "json_file_name": json_file_name,
-        "json_file_path": f"s3://youtube-data-bucket-ram/{json_file_name}",
-        "csv_file_name": csv_file_name,
-    }
+    return {'json_file_name': json_file_name, 
+            'json_file_path':f"s3://youtube-data-bucket-ram-landing-data/{json_file_name}",
+            'csv_file_name': csv_file_name }
 
     ## Writing it to local filesystem
     # with open(output_file_path, "w", encoding="utf-8") as output_file:
@@ -132,4 +138,7 @@ def parse_top_10_youtube_music_trending(
 
 
 if __name__ == "__main__":
-    parse_top_10_youtube_music_trending(extract_trending_youtube_videos())
+   raw_json_data = extract_trending_youtube_videos_raw_data()
+   parsed_results = parse_top_youtube_music_trending_for_the_day(raw_json_data)
+   put_trending_data_into_landing_bucket(parsed_results)
+   
