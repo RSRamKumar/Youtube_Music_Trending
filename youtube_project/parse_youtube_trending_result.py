@@ -91,7 +91,8 @@ def parse_top_youtube_music_trending_for_the_day(
     youtube_trending_results_raw: json,
 ) -> List:
     """
-    Method for parsing the trending music from raw json response
+    Method for parsing the top 10 music from raw json response
+    and write it to the file in the S3 bucket
     """
     results = [YoutubeData(**item) for item in youtube_trending_results_raw["items"]]
 
@@ -124,11 +125,11 @@ def put_trending_data_into_landing_bucket(trendings_list:List) -> Dict:
     # Put the data into Landing Bucket
     s3_client.put_object(
         Body=json_data.encode("utf-8"),
-        Bucket="youtube-data-bucket-ram-landing-data",
+        Bucket="ramsur-youtube-project-01-landing-bucket",
         Key=json_file_name,
     )
     return {'json_file_name': json_file_name, 
-            'json_file_path':f"s3://youtube-data-bucket-ram-landing-data/{json_file_name}",
+            'json_file_path':f"s3://ramsur-youtube-project-01-landing-bucket/{json_file_name}",
             'csv_file_name': csv_file_name }
 
     ## Writing it to local filesystem
