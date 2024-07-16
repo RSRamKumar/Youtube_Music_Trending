@@ -27,7 +27,7 @@ with DAG(
     task_0 = HttpSensor(
         task_id="check_youtube_api_ready",
         http_conn_id="youtube_api_url",
-        endpoint="youtube/v3/videos?part=contentDetails%2Cid%2Csnippet%2Cstatistics&chart=mostPopular&maxResults=10&regionCode=IN&videoCategoryId=10&key={{ti.xcom_pull('dev_key')}}&alt=json",
+        endpoint="youtube/v3/videos?part=contentDetails%2Cid%2Csnippet%2Cstatistics&chart=mostPopular&maxResults=10&regionCode=IN&videoCategoryId=10&key=AIzaSyDeydpyIqXNbwAlAnjuqxcpr5s_n12QynQ&alt=json",
     )
 
     task_1 = PythonOperator(
@@ -49,13 +49,13 @@ with DAG(
 
     task_4 = BashOperator(
         task_id="copy_data_from_landing_to_intermediate_bucket",
-        bash_command='aws s3 cp {{ti.xcom_pull("load_of_json_trending_data_into_landing_bucket")["json_file_path"]}} s3://youtube-data-bucket-ram-intermediate-data/{{ti.xcom_pull("load_of_json_trending_data_into_landing_bucket")["json_file_name"]}}'
+        bash_command='aws s3 cp {{ti.xcom_pull("load_of_json_trending_data_into_landing_bucket")["json_file_path"]}} s3://ramsur-youtube-project-02-intermediate-bucket/{{ti.xcom_pull("load_of_json_trending_data_into_landing_bucket")["json_file_name"]}}'
     )
 
     task_5 = S3KeySensor(
         task_id="check_for_transformed_csv_data",
         bucket_key='{{ti.xcom_pull("load_of_json_trending_data_into_landing_bucket")["csv_file_name"]}}',
-        bucket_name="youtube-data-bucket-ram-transformed-data",
+        bucket_name="ramsur-youtube-project-03-transformed-bucket",
         aws_conn_id="aws_default",
         poke_interval=15,
         timeout=120,
@@ -65,13 +65,13 @@ with DAG(
         task_id="create_plotly_dashboard",
         python_callable=create_HTML_dashboard,
         op_kwargs={
-            "file_path": 's3://youtube-data-bucket-ram-transformed-data/{{ti.xcom_pull("load_of_json_trending_data_into_landing_bucket")["csv_file_name"]}}'
+            "file_path": 's3://ramsur-youtube-project-03-transformed-bucket/{{ti.xcom_pull("load_of_json_trending_data_into_landing_bucket")["csv_file_name"]}}'
         },
     )
 
     task_7 = BashOperator(
         task_id="move_plotly_dashboard_from_ec2_to_transformed_bucket",
-        bash_command='aws s3 mv {{ti.xcom_pull("create_plotly_dashboard")}} s3://youtube-data-bucket-ram-transformed-data/',
+        bash_command='aws s3 mv {{ti.xcom_pull("create_plotly_dashboard")}} s3://ramsur-youtube-project-03-transformed-bucket/',
     )
 
     task_0 >> task_1 >> task_2 >> task_3 >> task_4 >> task_5 >> task_6 >> task_7
