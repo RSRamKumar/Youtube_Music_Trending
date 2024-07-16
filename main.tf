@@ -3,38 +3,34 @@ provider "aws" {
 }
 
 
-# Sample Bucket 
-resource "aws_s3_bucket" "first-bucket" {
-  bucket = "my-tf-test-bucket-ruppa"
-  tags = {
-    name = "Youtube Project"
-  }
-}
-
-resource "aws_s3_bucket_versioning" "first-bucket-versioning" {
-  bucket = "my-tf-test-bucket-ruppa"
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
 resource "aws_s3_bucket" "landing-bucket" {
-  bucket = "ramsur-youtube-project-01-landing-bucket"
+  bucket = var.landing_bucket
+  force_destroy = true 
   tags = {
     name = "Youtube Project"
   }
+
 }
 
 resource "aws_s3_bucket" "intermediate-bucket" {
-  bucket = "ramsur-youtube-project-02-intermediate-bucket"
+  bucket = var.intermediate_bucket
+  force_destroy = true 
   tags = {
     name = "Youtube Project"
   }
 }
 
 resource "aws_s3_bucket" "transformed-bucket" {
-  bucket = "ramsur-youtube-project-03-transformed-bucket"
+  bucket = var.transformed_bucket
+  force_destroy = true 
   tags = {
     name = "Youtube Project"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "transformed-bucket-versioning" {
+  bucket = var.transformed_bucket
+  versioning_configuration {
+    status = "Enabled"
   }
 }
