@@ -4,7 +4,7 @@ import pandas as pd
 
 def lambda_handler(event, context):
     """
-    Lambda function to transform of Youtube Results
+    Lambda function to transform of Youtube Results 
     JSON file to CSV file
     """
    
@@ -35,7 +35,7 @@ def lambda_handler(event, context):
     df_csv = df_csv.to_csv(index=False)
     
     # Writing the CSV file to S3 Bucket
-    s3_client.put_object(Bucket= 'youtube-data-bucket-ram-transformed-data', Key=csv_file_name, Body=df_csv)
+    s3_client.put_object(Bucket= 'ramsur-youtube-project-03-transformed-bucket', Key=csv_file_name, Body=df_csv)
         
     
     return {
