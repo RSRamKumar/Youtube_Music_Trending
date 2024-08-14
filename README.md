@@ -11,6 +11,7 @@ Tools Used:
 1. Python [ETL Pipeline including Pydantic for data parsing and validation],
 2. Airflow on EC2 instance [Task orchestration],
 3. Plotly Dash [Data Visualization]
+4. Terraform [Infrastructure Definition]
 
 ![image](https://github.com/RSRamKumar/Youtube_Music_Trending/assets/39699070/15bb640d-f184-4be2-9535-0075b75d3656)
 
