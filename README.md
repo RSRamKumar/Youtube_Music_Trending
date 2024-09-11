@@ -1,5 +1,9 @@
 # Youtube Music Trending Project
 
+![image](https://github.com/user-attachments/assets/2c4adaf4-7b94-46df-a850-b3342f1caa33)
+
+Fig: Overview of the Project
+
 A project to find the top trending music videos in India (or other region) by retrieving the data using the
 Youtube API, parsing the relevant information and creating a simple dashboard in Plotly.
 
